@@ -14,6 +14,7 @@ interface User {
 interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+   loading: boolean;
 }
 
 // ✅ Properly typed context
@@ -22,6 +23,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // ✅ Correct props typing
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,6 +36,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         setUser(null);
         console.log(error);
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -41,7 +45,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, loading }}>
       {children}
     </UserContext.Provider>
   );
