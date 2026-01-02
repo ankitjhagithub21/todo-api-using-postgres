@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import type { Todo } from "@/types/todo";
 
-
 import {
   Select,
   SelectContent,
@@ -17,21 +16,21 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { apiUrl } from "@/constant";
 import axios from "axios";
 import { toast } from "sonner";
-
-
+import { useState } from "react";
 
 interface TodoCardProps {
-    todo:Todo
+  todo: Todo;
 }
 
-
-
-const TodoCard = ({todo}:TodoCardProps) => {
+const TodoCard = ({ todo }: TodoCardProps) => {
+  const [status, setStatus] = useState(
+    todo.completed ? "completed" : "not-completed"
+  );
 
   const handleDelete = async () => {
     try {
@@ -45,36 +44,59 @@ const TodoCard = ({todo}:TodoCardProps) => {
     }
   };
 
+  const handleUpdateStatus = async (status: boolean) => {
+    try {
+      await axios.put(
+        `${apiUrl}/api/todos/${todo.id}`,
+        { completed: status },
+        {
+          withCredentials: true,
+        }
+      );
+      toast.success("Todo status updated successfully");
+      window.location.reload(); // or lift state up for better UX
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "Update failed");
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{new Date(todo.createdAt).toLocaleDateString()}</CardTitle>
-        <CardDescription>Status : {todo.completed ? 'Completed' : 'Not Completed'}</CardDescription>
+        <CardDescription>
+          Status : {todo.completed ? "Completed" : "Not Completed"}
+        </CardDescription>
         <CardAction>
-         <DeleteConfirmationModal onConfirm={handleDelete}/>
+          <DeleteConfirmationModal onConfirm={handleDelete} />
         </CardAction>
       </CardHeader>
       <CardContent>
         <p>{todo.title}</p>
       </CardContent>
       <CardFooter>
-       <div>
-         <p className="text-sm mb-2">Update Status</p>
+        <div>
+          <p className="text-sm mb-2">Update Status</p>
 
-        <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select status" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-         
-          <SelectItem value="completed">Completed</SelectItem>
-          <SelectItem value="not-completed">Not Completed</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-       </div>
-        
+          <Select
+            value={status}
+            onValueChange={(value) => {
+              setStatus(value);
+              handleUpdateStatus(value === "completed");
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="not-completed">Not Completed</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </CardFooter>
     </Card>
   );
