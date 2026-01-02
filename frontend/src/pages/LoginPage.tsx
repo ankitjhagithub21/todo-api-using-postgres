@@ -1,7 +1,10 @@
+import AuthForm from "@/components/custom/AuthForm"
 
 const LoginPage = () => {
   return (
-    <div>LoginPage</div>
+    <div className="h-screen w-full flex items-center justify-center p-5">
+      <AuthForm title={"Welcome back"} type="login"/>
+    </div>
   )
 }
 
