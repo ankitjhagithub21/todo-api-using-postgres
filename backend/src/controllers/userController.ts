@@ -105,49 +105,7 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
 
-      },
-    });
-
-    res.status(201).json(users);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users." });
-  }
-};
-
-export const updateUserRole = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-
-  try {
-    const { role } = req.body;
-
-    const updated = await prisma.user.update({
-      where: { id },
-      data: {
-        role: role,
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        name: true,
-      },
-    });
-
-    res.status(200).json(updated);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users." });
-  }
-};
 
 export const logout = (req: Request, res: Response) => {
   res.clearCookie("token");
