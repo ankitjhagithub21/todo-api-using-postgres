@@ -28,18 +28,14 @@ export const getTodos = async (req: Request, res: Response) => {
   
   try {
     const todos = await prisma.todo.findMany({
+       where: {
+        authorId: req.user?.id, 
+      },
       orderBy: { createdAt: "desc" },
       select:{
          id:true,
          title:true, 
          completed:true,
-         author:{
-          select:{
-            id:true,
-            name:true,
-            email:true
-          }
-         }
       }
     });
 
@@ -51,17 +47,29 @@ export const getTodos = async (req: Request, res: Response) => {
 };
 
 export const updateTodo = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+  const todoId = Number(req.params.id);
+
 
   try {
     const { title, completed } = req.body;
 
+    const todo  = await prisma.todo.findUnique({where:{id:todoId}, select:{authorId:true}})
+
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    if (todo.authorId !== req.user?.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const updated = await prisma.todo.update({
-      where: { id },
+      where: { id:todoId },
       data: { title, completed },
     });
 
     res.status(200).json(updated);
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to update Todo." });
@@ -71,9 +79,13 @@ export const updateTodo = async (req: Request, res: Response) => {
 export const deleteTodo = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   try {
-    const todo = await prisma.todo.findUnique({ where: { id } });
+    const todo = await prisma.todo.findUnique({ where: { id }, select:{authorId:true} });
 
     if (!todo) return res.status(404).json({ error: "Todo not found." });
+
+     if (todo.authorId !== req.user?.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
     await prisma.todo.delete({ where: { id } });
 
