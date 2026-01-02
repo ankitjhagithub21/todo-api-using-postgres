@@ -15,6 +15,12 @@ export const createTodo = async (req: Request, res: Response) => {
         title,
         authorId
       },
+      select:{
+        id:true,
+        title:true,
+        completed:true,
+        createdAt:true
+      }
     });
 
     res.status(201).json(todo);
