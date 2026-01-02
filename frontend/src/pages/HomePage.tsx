@@ -1,14 +1,18 @@
 import CreateTodoModal from "@/components/custom/CreateTodoModal";
 import TodoCard from "@/components/custom/TodoCard";
 import { apiUrl } from "@/constant";
-import type { Todo } from "@/types/todo";
+import type { RootState } from "@/redux/store";
+import { addTodo, setIsLoading, setTodos } from "@/redux/todoSlice";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 const HomePage = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  
+  const {todos, isLoading} = useSelector((state:RootState)=>state.todo)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -16,11 +20,11 @@ const HomePage = () => {
         const res = await axios.get(`${apiUrl}/api/todos`, {
           withCredentials: true,
         });
-        setTodos(res.data);
+       dispatch(setTodos(res.data))
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
+        dispatch(setIsLoading(false));
       }
     };
     fetchTodos();
@@ -33,7 +37,7 @@ const HomePage = () => {
       { title },
       { withCredentials: true }
     );
-    setTodos((prev) => [res.data, ...prev]);
+    dispatch(addTodo(res.data))
     toast.success("Todo created successfully.");
   };
 

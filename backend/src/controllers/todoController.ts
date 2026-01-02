@@ -73,6 +73,12 @@ export const updateTodo = async (req: Request, res: Response) => {
     const updated = await prisma.todo.update({
       where: { id:todoId },
       data: { title, completed },
+      select:{
+        id:true,
+        title:true,
+        completed:true,
+        createdAt:true
+      }
     });
 
     res.status(200).json(updated);

@@ -22,6 +22,8 @@ import { apiUrl } from "@/constant";
 import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { deleteTodo, updateTodo } from "@/redux/todoSlice";
 
 interface TodoCardProps {
   todo: Todo;
@@ -32,13 +34,15 @@ const TodoCard = ({ todo }: TodoCardProps) => {
     todo.completed ? "completed" : "not-completed"
   );
 
+  const dispatch = useDispatch();
+
   const handleDelete = async () => {
     try {
       await axios.delete(`${apiUrl}/api/todos/${todo.id}`, {
         withCredentials: true,
       });
+      dispatch(deleteTodo(todo.id));
       toast.success("Todo deleted successfully");
-      window.location.reload(); // or lift state up for better UX
     } catch (error: any) {
       toast.error(error?.response?.data?.error || "Delete failed");
     }
@@ -46,15 +50,15 @@ const TodoCard = ({ todo }: TodoCardProps) => {
 
   const handleUpdateStatus = async (status: boolean) => {
     try {
-      await axios.put(
+      const res = await axios.put(
         `${apiUrl}/api/todos/${todo.id}`,
         { completed: status },
         {
           withCredentials: true,
         }
       );
+      dispatch(updateTodo(res.data));
       toast.success("Todo status updated successfully");
-      window.location.reload(); // or lift state up for better UX
     } catch (error: any) {
       toast.error(error?.response?.data?.error || "Update failed");
     }
