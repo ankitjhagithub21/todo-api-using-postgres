@@ -36,6 +36,7 @@ export const getTodos = async (req: Request, res: Response) => {
          id:true,
          title:true, 
          completed:true,
+         createdAt:true
       }
     });
 
