@@ -4,6 +4,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 import todoRoutes from "./routes/todoRoutes"
 import userRoutes from "./routes/userRoutes"
+import adminRoutes from "./routes/adminRoutes"
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use("/api/todos",  todoRoutes)
 app.use("/api/users", userRoutes)
+app.use("/api/admin", adminRoutes)
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
