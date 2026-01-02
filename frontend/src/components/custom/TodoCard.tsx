@@ -10,7 +10,6 @@ import {
 import type { Todo } from "@/types/todo";
 
 
-
 import {
   Select,
   SelectContent,
@@ -20,20 +19,39 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import { apiUrl } from "@/constant";
+import axios from "axios";
+import { toast } from "sonner";
+
 
 
 interface TodoCardProps {
     todo:Todo
 }
 
+
+
 const TodoCard = ({todo}:TodoCardProps) => {
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`${apiUrl}/api/todos/${todo.id}`, {
+        withCredentials: true,
+      });
+      toast.success("Todo deleted successfully");
+      window.location.reload(); // or lift state up for better UX
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "Delete failed");
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{new Date(todo.createdAt).toLocaleDateString()} lorem</CardTitle>
+        <CardTitle>{new Date(todo.createdAt).toLocaleDateString()}</CardTitle>
         <CardDescription>Status : {todo.completed ? 'Completed' : 'Not Completed'}</CardDescription>
         <CardAction>
-         <DeleteConfirmationModal/>
+         <DeleteConfirmationModal onConfirm={handleDelete}/>
         </CardAction>
       </CardHeader>
       <CardContent>
