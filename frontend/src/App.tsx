@@ -1,16 +1,21 @@
 
-import { Button } from "@/components/ui/button"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
+import ProtectedRoute from "./components/custom/ProtectedRoute"
+
 
 const App = () => {
+
+
 
   const router = createBrowserRouter([
     {
       path:"/",
-      element:<HomePage/>
+      element:<ProtectedRoute>
+        <HomePage/>
+      </ProtectedRoute>
     },
      {
       path:"/login",

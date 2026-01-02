@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { apiUrl } from "@/constant";
 import { toast } from "sonner";
+import { useAuth } from "@/context/UserContext";
 
 const loginSchema = z.object({
   email: z
@@ -44,7 +45,7 @@ interface AuthFormProps {
 
 const AuthForm = ({ title, type }: AuthFormProps) => {
   const navigate = useNavigate();
-
+  const {setUser} = useAuth()
   const form = useForm<
     z.infer<typeof loginSchema> | z.infer<typeof registerSchema>
   >({
@@ -61,7 +62,8 @@ const AuthForm = ({ title, type }: AuthFormProps) => {
     values: z.infer<typeof loginSchema> | z.infer<typeof registerSchema>
   ) {
     try {
-      await axios.post(`${apiUrl}/api/users/${type}`, values);
+      const res = await axios.post(`${apiUrl}/api/users/${type}`, values);
+      setUser(res.data)
       navigate("/")
     } catch (error: any) {
       console.log(error);
