@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "../lib/jwt";
-import "dotenv/config"
+import "dotenv/config";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -52,6 +52,18 @@ export const registerUser = async (req: Request, res: Response) => {
       },
     });
 
+    const token = signToken({
+      id: user.id,
+      role: user.role,
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: "Failed to register user." });
@@ -91,36 +103,30 @@ export const loginUser = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({
-        message:"Login successull.",
-        user:{
-            id:user.id,
-            name:user.name, 
-            email:user.email,
-            role:user.role
-        }
+      message: "Login successull.",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
-
   } catch (error) {
     res.status(500).json({ error: "Login failed." });
   }
 };
-
-
 
 export const logout = (req: Request, res: Response) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-
 export const getCurrentUser = async (req: Request, res: Response) => {
-  
   try {
     const userId = req.user?.id;
 
-
     const user = await prisma.user.findUnique({
-       where:{id:userId},
+      where: { id: userId },
       select: {
         id: true,
         name: true,
@@ -129,7 +135,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
       },
     });
 
-    if(!user) return res.status(401).json({error:"Unauthorized."})
+    if (!user) return res.status(401).json({ error: "Unauthorized." });
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch users." });

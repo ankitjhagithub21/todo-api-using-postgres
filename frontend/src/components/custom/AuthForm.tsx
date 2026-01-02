@@ -62,13 +62,7 @@ const AuthForm = ({ title, type }: AuthFormProps) => {
   ) {
     try {
       await axios.post(`${apiUrl}/api/users/${type}`, values);
-      if (type === "register") {
-        toast.success("Account created successfully, please login.");
-        navigate("/login");
-      } else {
-        toast.success("Login successfully.");
-        navigate("/");
-      }
+      navigate("/")
     } catch (error: any) {
       console.log(error);
       toast.error(error?.response?.data?.error || "Something went wrong.");
