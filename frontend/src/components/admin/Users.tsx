@@ -10,20 +10,29 @@ import {
 } from "@/components/ui/table";
 import { apiUrl } from "@/constant";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 
 const LIMIT = 10;
 
 interface User {
-  id:number;
-  name:string;
-  email:string;
-  role:"ADMIN" | "USER";
-  createdAt:Date
+  id: number;
+  name: string;
+  email: string;
+  role: "ADMIN" | "USER";
+  createdAt: Date;
 }
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -41,7 +50,7 @@ const Users = () => {
           }
         );
         setUsers(res.data.data);
-        setTotalPages(res.data.pagination.totalPages)
+        setTotalPages(res.data.pagination.totalPages);
       } catch (error) {
         console.error(error);
       } finally {
@@ -51,6 +60,24 @@ const Users = () => {
 
     fetchUsers(page);
   }, [page]);
+
+  const updateUserRole = async (authorId: number, role: string) => {
+    try {
+      await axios.put(
+        `${apiUrl}/api/admin/update-user-role`,
+        { authorId, role },
+        { withCredentials: true }
+      );
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === authorId ? { ...u, role: role as "ADMIN" | "USER" } : u
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (loading) {
     return (
@@ -63,13 +90,12 @@ const Users = () => {
   return (
     <>
       <Table>
-
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>Joined</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>Created At</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -85,13 +111,31 @@ const Users = () => {
               <TableRow key={user.id}>
                 <TableCell>{user?.name || "—"}</TableCell>
                 <TableCell>{user?.email || "—"}</TableCell>
-                <TableCell>
-                  <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
-                    {user.role}
-                  </Badge>
-                </TableCell>
+
                 <TableCell>
                   {new Date(user.createdAt).toLocaleDateString()}
+                </TableCell>
+
+                <TableCell>
+                  {/* <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
+                    {user.role}
+                  </Badge> */}
+
+                  <Select
+                    value={user.role}
+                    onValueChange={(value) => updateUserRole(user.id, value)}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Roles</SelectLabel>
+                        <SelectItem value="USER">User</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </TableCell>
               </TableRow>
             ))
