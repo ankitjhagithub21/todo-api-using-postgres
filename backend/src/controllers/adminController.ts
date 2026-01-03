@@ -5,8 +5,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        id: { not: req.user?.id},
-  
+        id: { not: req.user?.id },
       },
       orderBy: { createdAt: "desc" },
       select: {
@@ -26,23 +25,41 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getAllTodos = async (req: Request, res: Response) => {
   try {
-    const todos = await prisma.todo.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        completed: true,
-        createdAt:true,
-        author: {
-          select: {
-            id: true,
-            name: true,
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const [todos, total] = await Promise.all([
+      prisma.todo.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          completed: true,
+          createdAt: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
+      }),
+      prisma.todo.count(),
+    ]);
+
+    res.status(200).json({
+      data: todos,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
     });
-
-    res.status(201).json(todos);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch users." });
   }
