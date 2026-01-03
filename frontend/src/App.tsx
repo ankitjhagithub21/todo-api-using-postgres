@@ -4,6 +4,8 @@ import HomePage from "./pages/HomePage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ProtectedRoute from "./components/custom/ProtectedRoute"
+import Dashboard from "./pages/Dashboard"
+import AdminRoute from "./components/custom/AdminRoute"
 
 
 const App = () => {
@@ -25,6 +27,12 @@ const App = () => {
     {
       path:"/register",
       element:<RegisterPage/>
+    },
+     {
+      path:"/dashboard",
+      element:<AdminRoute>
+        <Dashboard/>
+      </AdminRoute>
     },
 
   ])

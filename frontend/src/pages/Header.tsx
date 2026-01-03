@@ -15,6 +15,7 @@ import { useAuth } from "@/context/UserContext";
 import { addTodo } from "@/redux/todoSlice";
 import axios from "axios";
 import { useDispatch} from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Header = () => {
@@ -50,7 +51,11 @@ const Header = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem>{user?.name}</DropdownMenuItem>
           <DropdownMenuItem>{user?.email}</DropdownMenuItem>
-          <DropdownMenuItem>Role : {user?.role}</DropdownMenuItem>
+          {
+            user?.role === "ADMIN" && <DropdownMenuItem>
+              <Link to={"/dashboard"}>Dashboard</Link>
+            </DropdownMenuItem>
+          }
            <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
