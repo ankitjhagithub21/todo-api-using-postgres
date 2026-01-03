@@ -14,7 +14,8 @@ interface User {
 interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-   loading: boolean;
+  loading: boolean;
+  onLogout: () => void;
 }
 
 // ✅ Properly typed context
@@ -36,16 +37,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         setUser(null);
         console.log(error);
-      }finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, []);
 
+  const onLogout = async () => {
+    try {
+      await axios.post(
+        `${apiUrl}/api/users/logout`,
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUser(null);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, loading, onLogout }}>
       {children}
     </UserContext.Provider>
   );

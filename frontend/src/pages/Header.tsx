@@ -20,7 +20,7 @@ import { toast } from "sonner";
 const Header = () => {
   const dispatch = useDispatch();
 
-  const {user} = useAuth()
+  const {user, onLogout} = useAuth()
 
   const createTodo = async (title: string) => {
     const res = await axios.post(
@@ -52,7 +52,7 @@ const Header = () => {
           <DropdownMenuItem>{user?.email}</DropdownMenuItem>
           <DropdownMenuItem>Role : {user?.role}</DropdownMenuItem>
            <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
