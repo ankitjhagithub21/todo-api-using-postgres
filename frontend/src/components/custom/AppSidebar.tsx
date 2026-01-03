@@ -1,5 +1,4 @@
-import {  Home, Inbox, Users } from "lucide-react"
-
+import { Home, Inbox, Users, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,29 +8,27 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Link } from "react-router-dom"
+  SidebarFooter,
+} from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Link} from "react-router-dom";
+import { useAuth } from "@/context/UserContext";
 
-// Menu items.
+
 const items = [
-  {
-    title: "Home",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "All Todos",
-    url: "/dashboard/todos",
-    icon: Inbox,
-  },
-  {
-    title: "All Users",
-    url: "/dashboard/users",
-    icon: Users,
-  }
-]
+  { title: "Home", url: "/dashboard", icon: Home },
+  { title: "All Todos", url: "/dashboard/todos", icon: Inbox },
+  { title: "All Users", url: "/dashboard/users", icon: Users },
+];
 
 const AppSidebar = () => {
+  const { user, onLogout } = useAuth();
+ 
+
+  const handleLogout = async () => {
+    onLogout()
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -53,8 +50,33 @@ const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>
-  )
-}
 
-export default AppSidebar
+      {/* ✅ Sidebar Footer */}
+      <SidebarFooter className="border-t p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarFallback>
+                {user?.name?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="text-sm">
+              <p className="font-medium">{user?.name || "User"}</p>
+              <p className="text-muted-foreground">{user?.email}</p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="text-red-500 hover:text-red-600"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
+
+export default AppSidebar;

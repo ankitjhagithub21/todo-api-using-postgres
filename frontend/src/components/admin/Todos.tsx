@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 const Todos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
