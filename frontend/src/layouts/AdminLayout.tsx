@@ -7,7 +7,7 @@ const AdminLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="flex-1 p-5">
         <SidebarTrigger />
         <Outlet/>
       </main>

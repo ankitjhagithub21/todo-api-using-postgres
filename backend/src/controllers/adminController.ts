@@ -32,11 +32,11 @@ export const getAllTodos = async (req: Request, res: Response) => {
         id: true,
         title: true,
         completed: true,
+        createdAt:true,
         author: {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
       },
