@@ -172,7 +172,6 @@ A **full-stack Todo Management Application** built with **React**, **Node.js**, 
 ```bash
 DATABASE_URL=postgresql://username:password@localhost:5432/tododb
 JWT_SECRET=your_jwt_secret
-DATABASE_URL="postgresql://postgres:123456@localhost:5432/tododb"
 PORT = 8000
 ORIGIN = "http://localhost:5173"
 NODE_ENV = "development" 
@@ -212,6 +211,35 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## 🌐 API Endpoints (Sample)
+### Auth
+
+POST `/api/users/register`
+
+POST `/api/users/login`
+
+POST `/api/users/logout`
+
+GET `/api/users/current`
+
+### Todos
+
+GET `/api/todos`
+
+POST `/api/todos`
+
+PUT `/api/todos/:id`
+
+DELETE `/api/todos/:id`
+
+### Admin
+
+GET `/api/admin/users?page=&limit=`
+
+PUT `/api/admin/update-user-role`
+
+GET `/api/admin/todos?page=&limit=`
 
 
 
