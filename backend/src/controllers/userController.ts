@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response} from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "../lib/jwt";
