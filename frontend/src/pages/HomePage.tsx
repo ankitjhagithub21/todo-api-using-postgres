@@ -7,12 +7,9 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./Header";
 
-
 const HomePage = () => {
-
-  
-  const {todos, isLoading} = useSelector((state:RootState)=>state.todo)
-  const dispatch = useDispatch()
+  const { todos, isLoading } = useSelector((state: RootState) => state.todo);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -20,7 +17,7 @@ const HomePage = () => {
         const res = await axios.get(`${apiUrl}/api/todos`, {
           withCredentials: true,
         });
-       dispatch(setTodos(res.data))
+        dispatch(setTodos(res.data));
       } catch (error) {
         console.log(error);
       } finally {
@@ -30,12 +27,13 @@ const HomePage = () => {
     fetchTodos();
   }, []);
 
- 
   return (
     <div>
-      <Header/>
+      <Header />
       {isLoading ? (
         <>Loading...</>
+      ) : todos.length === 0 ? (
+        <p className="text-center">No todo found.</p>
       ) : (
         <div className="max-w-7xl mx-auto p-5 grid gap-5 lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
           {todos.map((todo) => {

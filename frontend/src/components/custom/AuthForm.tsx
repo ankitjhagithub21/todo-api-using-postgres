@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner"
 import {
   Form,
   FormControl,
@@ -19,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { apiUrl } from "@/constant";
 import { toast } from "sonner";
 import { useAuth } from "@/context/UserContext";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z
@@ -46,6 +48,10 @@ interface AuthFormProps {
 const AuthForm = ({ title, type }: AuthFormProps) => {
   const navigate = useNavigate();
   const {setUser} = useAuth()
+
+
+  const [loading,setLoading] = useState(false)
+
   const form = useForm<
     z.infer<typeof loginSchema> | z.infer<typeof registerSchema>
   >({
@@ -62,12 +68,15 @@ const AuthForm = ({ title, type }: AuthFormProps) => {
     values: z.infer<typeof loginSchema> | z.infer<typeof registerSchema>
   ) {
     try {
+      setLoading(true)
       const res = await axios.post(`${apiUrl}/api/users/${type}`, values);
       setUser(res.data)
       navigate("/")
     } catch (error: any) {
       console.log(error);
       toast.error(error?.response?.data?.error || "Something went wrong.");
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -131,7 +140,14 @@ const AuthForm = ({ title, type }: AuthFormProps) => {
             )}
           />
 
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={loading}>
+            {
+              loading ? <>
+               <Spinner/>
+               Please Wait...
+              </> : 'Submit'
+            }
+          </Button>
         </form>
       </Form>
       <div className="text-sm mt-5">
